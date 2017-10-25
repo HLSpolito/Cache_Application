@@ -12,7 +12,7 @@ HOST_LFLAGS = -L${XILINX_SDACCEL}/runtime/lib/x86_64 -lxilinxopencl -llmx6.0
 KERNEL_SRCS = knp.cpp 
 KERNEL_NAME = knp
 KERNEL_DEFS = 
-KERNEL_INCS = 
+KERNEL_INCS = -I../
 #set target device for XCLBIN
 XDEVICE=xilinx:adm-pcie-7v3:1ddr:3.0
 XDEVICE_REPO_PATH=
@@ -36,6 +36,6 @@ endif
 
 HOST_ARGS = -b ${XCLBIN} -k ${KERNEL_NAME} -f output_$(SDA_FLOW).o
 
-include ~/WORKSPACE/SDAccel/common.mk
+include ../../common/common.mk
 run: host xbin
 	XCL_EMULATION_MODE=true ${HOST_EXE_DIR}/${HOST_EXE} ${HOST_ARGS}

@@ -16,7 +16,6 @@ typedef int mType;
 
 
 
-
 #include "cache_only.h"
 typedef CACHE_ONLY::Cache<unsigned char, 2, 7> CacheM;
 typedef CACHE_ONLY::Cache<unsigned char, 0, 7> CacheN;

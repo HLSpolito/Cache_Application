@@ -15,28 +15,10 @@
 typedef int mType;
 
 
-
-#ifndef CACHE
 extern "C" void knp(
 		unsigned char * im1,
 		unsigned char * im2,
 		float * out
 		);
-#else
 
-#include "/home/liang/WORKSPACE/Vivado/cache/data/cache_only.h"
-typedef CACHE_ONLY::Cache<unsigned char, 3, 5> CacheM;
-typedef CACHE_ONLY::Cache<unsigned char, 0, 6> CacheN;
-typedef CACHE_ONLY::Cache<float, 0, 4> CacheF;
-/*
-typedef CACHE_ONLY::Cache<unsigned char, 2, 3> CacheM;
-typedef CACHE_ONLY::Cache<unsigned char, 0, 3> CacheN;
-typedef CACHE_ONLY::Cache<float, 0, 3> CacheF;
 
-*/
-
-extern "C" void knp(CacheM::DataType *im1,
-		CacheN::DataType *im2,
-		CacheF::DataType *  out
-		);
-#endif

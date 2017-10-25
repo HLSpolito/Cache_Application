@@ -38,6 +38,6 @@ endif
 
 HOST_ARGS = -b ${XCLBIN} -k ${KERNEL_NAME}
 
-include ~/WORKSPACE/SDAccel/common.mk
+include ../../common/common.mk
 run: host xbin
 	XCL_EMULATION_MODE=true ${HOST_EXE_DIR}/${HOST_EXE} ${HOST_ARGS}

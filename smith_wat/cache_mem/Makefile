@@ -6,7 +6,7 @@ SDA_FLOW = hw_emu
 HOST_SRCS = main.cpp  oclErrorCodes.cpp  oclHelper.cpp  soft.cpp
 HOST_EXE_DIR=.
 HOST_EXE = baseline
-HOST_CFLAGS = -g -Wall -I${XILINX_SDACCEL}/runtime/include/1_2
+HOST_CFLAGS = -g -Wall -I${XILINX_SDACCEL}/runtime/include/1_2 	-I../../common/
 HOST_LFLAGS = -L${XILINX_SDACCEL}/runtime/lib/x86_64 -lxilinxopencl
 #-llmx6.0
 
@@ -38,6 +38,6 @@ endif
 
 HOST_ARGS =  -k ${XCLBIN}
 
-include ~/WORKSPACE/SDAccel/common.mk
+include ../../common/common.mk
 run:  xbin
 	XCL_EMULATION_MODE=true  ~/WORKSPACE/SDAccel/smithwaterman/base/baseline/baseline ${HOST_ARGS}

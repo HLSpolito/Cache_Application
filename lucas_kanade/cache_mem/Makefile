@@ -12,7 +12,7 @@ HOST_LFLAGS = -L${XILINX_SDACCEL}/runtime/lib/x86_64 -lxilinxopencl -llmx6.0
 KERNEL_SRCS = knp.cpp 
 KERNEL_NAME = knp
 KERNEL_DEFS = -DCACHE -I../../cache
-KERNEL_INCS = 
+KERNEL_INCS = -I../
 #set target device for XCLBIN
 XDEVICE=xilinx:adm-pcie-7v3:1ddr:3.0
 XDEVICE_REPO_PATH=

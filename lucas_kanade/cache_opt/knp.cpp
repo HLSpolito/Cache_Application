@@ -25,7 +25,6 @@ int P(int x, int y){
 	return Py(y) * WIDTH + Px(x);
 }
 
-
 int get_matrix_inv(mType* G, float* G_inv)
 {
 	float detG = (float)G[0] * G[3] - (float)G[1] * G[2];
@@ -36,22 +35,24 @@ int get_matrix_inv(mType* G, float* G_inv)
 	return 1;
 }
 extern "C"
-void knp(
-		unsigned char * im1,
-		unsigned char * im2,
-		float* out
+void knp(CacheM::DataType *im1p,
+		CacheN::DataType *im2p,
+		CacheF::DataType  *  outp
 		)
 {
 
-#pragma HLS INTERFACE m_axi port=im1 offset=slave bundle=gmem0
-#pragma HLS INTERFACE m_axi port=im2 offset=slave bundle=gmem1
-#pragma HLS INTERFACE m_axi port=out offset=slave bundle=gmem2
+#pragma HLS INTERFACE m_axi port=im1p bundle=gmem0
+#pragma HLS INTERFACE m_axi port=im2p bundle=gmem1
+#pragma HLS INTERFACE m_axi port=outp bundle=gmem2
 
-#pragma HLS INTERFACE s_axilite port=im1 bundle=control
-#pragma HLS INTERFACE s_axilite port=im2 bundle=control
-#pragma HLS INTERFACE s_axilite port=out bundle=control
+#pragma HLS INTERFACE s_axilite port=im1p bundle=control
+#pragma HLS INTERFACE s_axilite port=im2p bundle=control
+#pragma HLS INTERFACE s_axilite port=outp bundle=control
 #pragma HLS INTERFACE s_axilite port=return bundle=control
 
+	CacheM im1(im1p);
+	CacheN im2(im2p);
+	CacheF out(outp);
 loop_main:for(int j=0;j<HEIGHT;j++)
 	for(int i = 0; i<WIDTH;i++){
 		float G_inv[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -60,25 +61,30 @@ loop_main:for(int j=0;j<HEIGHT;j++)
 #pragma HLS ARRAY_PARTITION variable=G complete dim=1
 		mType b_k[2] = { 0.0f, 0.0f };
 #pragma HLS ARRAY_PARTITION variable=b_k complete dim=1
+		int x;
 
+		unsigned char tmp0 = im1[Py(j-WINDOW_SIZE-1)*WIDTH];
+		unsigned char tmp1 = im1[Py(j-WINDOW_SIZE)*WIDTH];
 loop_column:for (int wj = -WINDOW_SIZE; wj<=WINDOW_SIZE;wj++)
 		{
+			unsigned char tmp1 = im1[Py(j+wj+1)*WIDTH];
 loop_row:	for (int wi = -WINDOW_SIZE; wi<=WINDOW_SIZE;wi++)
 			{
 #pragma HLS PIPELINE
 				int px = Px(i+wi), py = Py(j+wj);
 				int im2_val = im2[px + py * WIDTH];
 
-				int deltaIk = im1[px + py * WIDTH] - im2_val;
+			//	int deltaIk = im1[px + py * WIDTH] - im2_val;
+				int deltaIk = im1.retrieve(px + py * WIDTH) - im2_val;
 				int cx=Px(i + wi +1) + py * WIDTH, dx = Px(i + wi - 1) + py * WIDTH;
-				int cIx=im1[cx];
+				int cIx=im1.retrieve(cx);
 				
-				cIx-= im1[dx];
+				cIx-= im1.retrieve(dx);
 				cIx >>= 1;
 				int cy=px + Py(j + wj+1) * WIDTH, dy=px + Py(j + wj-1)*WIDTH;
 			
-				int cIy =im1[cy];
-				cIy-= im1[dy];
+				int cIy =im1.retrieve(cy);
+				cIy-= im1.retrieve(dy);
 				cIy >>=1;
 
 				G[0] += cIx * cIx;
@@ -96,7 +102,10 @@ loop_row:	for (int wi = -WINDOW_SIZE; wi<=WINDOW_SIZE;wi++)
 		fx = G_inv[0] * b_k[0] + G_inv[1] * b_k[1];
 		fy = G_inv[2] * b_k[0] + G_inv[3] * b_k[1];
 
-		out[2*(j*WIDTH+i)]=fx;
-		out[2*(j*WIDTH+i)+1]=fy;
+		out.continue_write(2*(j*WIDTH+i),fx);
+		out.continue_write(2*(j*WIDTH+i)+1,fy);
 	}
+	printf("hit ratio of im1:%f\n",im1.getHitRatio());
+	printf("hit ratio of im2:%f\n",im2.getHitRatio());
+	printf("hit ratio of out:%f\n",out.getHitRatio());
 }

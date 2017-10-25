@@ -2,7 +2,7 @@
 
 #include <math.h>
 #include <stdio.h>
-#include "../param.h"
+#include "param.h"
 
 
 //2.0 #define of constant variables

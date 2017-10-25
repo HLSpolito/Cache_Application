@@ -50,14 +50,14 @@ HOST_SRCS = ../main_cl.cpp
 HOST_EXE_DIR=.
 HOST_EXE = main_ex
 HOST_DEFS = -DEXP=7
-HOST_CFLAGS = $(HOST_DEFS) -g -Wall -I${XILINX_SDACCEL}/runtime/include/1_2  -I../../common
+HOST_CFLAGS = $(HOST_DEFS) -g -Wall -I${XILINX_SDACCEL}/runtime/include/1_2 -I../../common
 HOST_LFLAGS = -L${XILINX_SDACCEL}/runtime/lib/x86_64 -lxilinxopencl -llmx6.0
 
 KERNEL_SRCS = ../bitonicSort.cpp
 KERNEL_NAME = bitonicSort
 KERNEL_DEFS = -DCACHE=5  $(HOST_DEFS) 
 KERNEL_INCS = -I. -I../../cache
-KERNEL_FLAGS =   
+KERNEL_FLAGS =  
 #-DOPT -DNEW_CACHE
 #set target device for XCLBIN
 XDEVICE=xilinx:adm-pcie-7v3:1ddr:3.0
